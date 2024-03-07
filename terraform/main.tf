@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source = "hashicorp/azurerm"
-      verson = "~3"
+      version = "~> 3.0.0"
     }
   }
 }
@@ -15,3 +15,5 @@ resource "azurerm_resource_group" "rg" {
   name     = "func-snap"
   location = "uksouth"
 }
+
+data "azurerm_client_config" "current" {}

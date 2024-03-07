@@ -62,7 +62,7 @@ resource "azurerm_network_interface" "vnic" {
 
   ip_configuration {
     name                          = "my-nic-config"
-    subnet_id                     = azurerm_subnet.example.id
+    subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
   }
 }

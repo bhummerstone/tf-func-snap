@@ -30,12 +30,38 @@ resource "azurerm_key_vault" "kv" {
   #   }
 }
 
-resource "azurerm_key_vault_access_policy" "my_access_policy" {
+resource "azurerm_key_vault_access_policy" "function_access_policy" {
   key_vault_id = azurerm_key_vault.kv.id
   tenant_id           = data.azurerm_client_config.current.tenant_id
-  object_id           = azurerm_function_app.fa.identity[0].principal_id
-  key_permissions     = ["get"]  # Adjust permissions as needed
-  secret_permissions  = ["get"]  # Adjust permissions as needed
+  object_id           = azurerm_linux_function_app.fa.identity[0].principal_id
+  key_permissions     = ["Get"]  
+  secret_permissions  = ["Get"]  
+}
+
+resource "azurerm_key_vault_access_policy" "ben_access_policy" {
+  key_vault_id = azurerm_key_vault.kv.id
+  tenant_id           = data.azurerm_client_config.current.tenant_id
+  object_id           = data.azurerm_client_config.current.object_id
+  key_permissions = [
+    "Backup", "Create", "Decrypt", "Delete", "Encrypt", "Get", "Import",
+    "List", "Purge", "Recover", "Restore", "Sign", "UnwrapKey", "Update",
+    "Verify", "WrapKey"
+  ]
+
+  secret_permissions = [
+    "Backup", "Delete", "Get", "List", "Purge", "Recover", "Restore", "Set"
+  ]
+
+  certificate_permissions = [
+    "Backup", "Create", "Delete", "DeleteIssuers", "Get", "GetIssuers",
+    "Import", "List", "ListIssuers", "ManageContacts", "ManageIssuers",
+    "Purge", "Recover", "Restore", "SetIssuers", "Update"
+  ]
+
+  storage_permissions = [
+    "Backup", "Delete", "DeleteSAS", "Get", "GetSAS", "List", "ListSAS",
+    "Purge", "Recover", "RegenerateKey", "Restore", "Set", "SetSAS", "Update"
+  ]
 }
 
 
