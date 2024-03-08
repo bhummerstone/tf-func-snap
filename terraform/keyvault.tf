@@ -13,11 +13,11 @@ resource "azurerm_role_assignment" "func_access_kv" {
     principal_id = azurerm_linux_function_app.fa.identity[0].principal_id
 }
 
-resource "azurerm_role_assignment" "ben_access_kv" {
-    scope = azurerm_key_vault.kv.id
-    role_definition_name = "Key Vault Administrator"
-    principal_id = data.azurerm_client_config.current.client_id
-}
+# resource "azurerm_role_assignment" "ben_access_kv" {
+#    scope = azurerm_key_vault.kv.id
+#    role_definition_name = "Key Vault Secrets User"
+#    principal_id = data.azurerm_client_config.current.client_id
+#}
 
 resource "azurerm_key_vault_key" "cmkkey" {
   name         = "bhfuncsnapcmk"
