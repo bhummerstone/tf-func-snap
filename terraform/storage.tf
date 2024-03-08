@@ -4,6 +4,10 @@ resource "azurerm_storage_account" "sa" {
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
   account_replication_type = "ZRS"
+
+  identity {
+    type = "SystemAssigned"
+  }
 }
 
 resource "azurerm_storage_account" "funcstg" {
@@ -18,6 +22,8 @@ resource "azurerm_storage_account_customer_managed_key" "cmk" {
   storage_account_id = azurerm_storage_account.sa.id
   key_vault_id       = azurerm_key_vault.kv.id
   key_name           = azurerm_key_vault_key.cmkkey.name
+
+  depends_on = [ azurerm_role_assignment.stg_access_kv ]
 }
 
 resource "azurerm_role_assignment" "func_access_stg" {
