@@ -1,11 +1,22 @@
+resource "random_string" "kv_name" {
+  length = 13
+  lower = true
+  numeric = false
+  special = false
+  upper = false
+}
+
 resource "azurerm_key_vault" "kv" {
-  name                        = "bhfuncsnapakv"
+  name                        = "bhfskv-${random_string.kv_name.result}"
   location                    = azurerm_resource_group.rg.location
   resource_group_name         = azurerm_resource_group.rg.name
   enabled_for_disk_encryption = true
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   sku_name                    = "standard"
   enable_rbac_authorization = true
+  soft_delete_retention_days = 7
+  purge_protection_enabled = true
+
 }
 
 resource "azurerm_role_assignment" "func_access_kv" {
