@@ -17,7 +17,7 @@ resource "azurerm_role_assignment" "func_access_kv" {
 resource "azurerm_role_assignment" "user_access_kv" {
    scope = azurerm_key_vault.kv.id
    role_definition_name = "Key Vault Administrator"
-   principal_id = data.azurerm_client_config.current.object_id
+   principal_id = "ec5f94a8-41f3-416c-8736-ed8a8b4093c7" #data.azurerm_client_config.current.object_id
 }
 
 resource "azurerm_key_vault_key" "cmkkey" {
