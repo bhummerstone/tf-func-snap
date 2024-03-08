@@ -21,7 +21,7 @@ resource "azurerm_storage_account_customer_managed_key" "cmk" {
 }
 
 resource "azurerm_role_assignment" "func_access_stg" {
-    scope = azurerm_key_vault.sa.id
+    scope = azurerm_storage_account.sa.id
     role_definition_name = "Storage Blob Data Contributor"
     principal_id = azurerm_linux_function_app.fa.identity[0].principal_id
 }
