@@ -31,6 +31,12 @@ resource "azurerm_role_assignment" "des_access_kv" {
     principal_id = azurerm_disk_encryption_set.des.identity[0].principal_id
 }
 
+resource "azurerm_role_assignment" "des_access_kv_crypto" {
+    scope = azurerm_key_vault.kv.id
+    role_definition_name = "Key Vault Crypto Service Encryption User"
+    principal_id = azurerm_disk_encryption_set.des.identity[0].principal_id
+}
+
 resource "azurerm_role_assignment" "user_access_kv" {
    scope = azurerm_key_vault.kv.id
    role_definition_name = "Key Vault Administrator"
