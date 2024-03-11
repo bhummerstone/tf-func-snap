@@ -20,6 +20,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   size                  = "Standard_D2s_v5"
   admin_username        = "benhu"
 
+  depends_on = [ azurerm_role_assignment.des_access_kv_crypto ]
 
   source_image_reference {
     publisher = "Canonical"
