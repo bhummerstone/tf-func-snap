@@ -2,6 +2,7 @@ import azure.functions as func
 import logging
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.compute import ComputeManagementClient
+from azure.storage.blob import BlobServiceClient
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 
@@ -25,6 +26,9 @@ def funcsnap(req: func.HttpRequest) -> func.HttpResponse:
 
     # Create a credential object using the DefaultAzureCredential class
     credential = DefaultAzureCredential()
+
+    # Create a blob service client
+    blob_service_client = BlobServiceClient(account_url, credential=default_credential)
 
     # Create a compute management client
     compute_client = ComputeManagementClient(credential, subscription_id)

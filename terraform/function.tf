@@ -25,3 +25,9 @@ resource "azurerm_linux_function_app" "fa" {
     type = "SystemAssigned"
   }
 }
+
+resource "azurerm_role_assignment" "func_access_rg" {
+    scope = azurerm_resource_group.rg.id
+    role_definition_name = "Contributor"
+    principal_id = azurerm_linux_function_app.fa.identity[0].principal_id
+}

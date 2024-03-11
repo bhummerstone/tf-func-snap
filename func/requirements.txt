@@ -5,3 +5,4 @@
 azure-functions
 azure-identity
 azure-mgmt-compute
+azure-storage-blob
