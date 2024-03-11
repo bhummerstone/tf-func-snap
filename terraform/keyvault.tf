@@ -40,7 +40,8 @@ resource "azurerm_role_assignment" "user_access_kv" {
 resource "azurerm_role_assignment" "stg_access_kv" {
    scope = azurerm_key_vault.kv.id
    role_definition_name = "Key Vault Crypto Service Encryption User"
-   principal_id = azurerm_storage_account.sa.identity[0].principal_id
+   principal_id = azurerm_storage_account.sa.identity.0.principal_id
+   #principal_id = data.azurerm_storage_account.sa_wrapper.identity.0.principal_id
 }
 
 resource "azurerm_key_vault_key" "cmkkey" {

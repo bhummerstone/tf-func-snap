@@ -10,6 +10,11 @@ resource "azurerm_storage_account" "sa" {
   }
 }
 
+#data "azurerm_storage_account" "sa_wrapper" {
+#  name = azurerm_storage_account.sa.name
+#  resource_group_name = azurerm_storage_account.sa.resource_group_name
+#}
+
 resource "azurerm_storage_account" "funcstg" {
   name                     = "bhfuncsnapfuncstg"
   resource_group_name      = azurerm_resource_group.rg.name
