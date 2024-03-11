@@ -1,5 +1,6 @@
 import azure.functions as func
 import logging
+import datetime
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.compute import ComputeManagementClient
 from azure.storage.blob import BlobServiceClient
@@ -14,6 +15,7 @@ def funcsnap(req: func.HttpRequest) -> func.HttpResponse:
     resource_group = req.params.get('resGrp')
     disk_name = req.params.get('diskName')
     snapshot_name = req.params.get('snapName')
+    snapshot_storage_account = req.params.get('snapStorageAccount')
     #keyvault_name = req.params.get('keyVaultName')
     #key_name = req.params.get('keyName')
 
@@ -21,6 +23,7 @@ def funcsnap(req: func.HttpRequest) -> func.HttpResponse:
     logging.info(f"Resource Group: {resource_group}")
     logging.info(f"Disk Name: {disk_name}")
     logging.info(f"Snapshot Name: {snapshot_name}")
+    logging.info(f"Snapshot Storage Account: {snapshot_storage_account}")
     #logging.info(f"Key Vault Name: {keyvault_name}")
     #logging.info(f"Key Name: {key_name}")
 
@@ -28,7 +31,8 @@ def funcsnap(req: func.HttpRequest) -> func.HttpResponse:
     credential = DefaultAzureCredential()
 
     # Create a blob service client
-    blob_service_client = BlobServiceClient(account_url, credential=default_credential)
+    account_url = f"https://{snapshot_storage_account}.blob.core.windows.net"
+    blob_service_client = BlobServiceClient(account_url, credential=credential)
 
     # Create a compute management client
     compute_client = ComputeManagementClient(credential, subscription_id)
@@ -43,22 +47,6 @@ def funcsnap(req: func.HttpRequest) -> func.HttpResponse:
             "create_option": "Copy",
             "source_uri": disk.id
         }
-        # Enable encryption
-        #encryption_settings_collection={
-        #    "enabled": True,
-        #    "encryption_settings": [
-        #        {
-        #            "disk_encryption_key": {
-        #                "source_vault": "<Your Key Vault>",
-        #                "key_url": "<Your Key URL>"
-        #            },
-        #            "key_encryption_key": {
-        #                "source_vault": "<Your Key Vault>",
-        #                "key_url": "<Your Key URL>"
-        #            }
-        #        }
-        #    ]
-        #}
     )
 
     # Create the snapshot
@@ -70,6 +58,19 @@ def funcsnap(req: func.HttpRequest) -> func.HttpResponse:
 
     # Wait for the operation to complete
     snapshot_operation.wait()
+
+    # Create a name for the container
+    container_name = datetime.today().strftime('%Y-%m-%d')
+    blob_service_client.create_container(container_name)
+
+    snapshot_sas = compute_client.snapshots.begin_grant_access(
+        resource_group,
+        snapshot_name,
+        access_duration=3600,
+        access_level="Read"
+    ).result()
+
+    copy_id = blob_service_client.start_copy_from_url(snapshot_sas.access_sas, f"https://{snapshot_storage_account}.blob.core.windows.net/{container_name}/{snapshot_name}.vhd")
     
-    return func.HttpResponse(f"Snapshot {snapshot_name} created successfully.")
+    return func.HttpResponse(f"Snapshot {snapshot_name} created successfully. Copy job started with ID {copy_id}")
     status_code=200
