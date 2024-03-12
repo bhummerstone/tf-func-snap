@@ -60,7 +60,7 @@ def funcsnap(req: func.HttpRequest) -> func.HttpResponse:
     snapshot_operation.wait()
 
     # Create a name for the container
-    container_name = datetime.date.today()
+    container_name = datetime.date.today().strftime("%Y%m%d") + "snapshots"
     blob_service_client.create_container(container_name)
 
     snapshot_sas = compute_client.snapshots.begin_grant_access(
