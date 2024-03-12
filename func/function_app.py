@@ -18,16 +18,12 @@ def funcsnap(req: func.HttpRequest) -> func.HttpResponse:
     disk_name = req.params.get('diskName')
     snapshot_name = req.params.get('snapName')
     snapshot_storage_account = req.params.get('snapStorageAccount')
-    #keyvault_name = req.params.get('keyVaultName')
-    #key_name = req.params.get('keyName')
 
     logging.info(f"Subscription ID: {subscription_id}")
     logging.info(f"Resource Group: {resource_group}")
     logging.info(f"Disk Name: {disk_name}")
     logging.info(f"Snapshot Name: {snapshot_name}")
     logging.info(f"Snapshot Storage Account: {snapshot_storage_account}")
-    #logging.info(f"Key Vault Name: {keyvault_name}")
-    #logging.info(f"Key Name: {key_name}")
 
     # Create a credential object using the DefaultAzureCredential class
     credential = DefaultAzureCredential()
@@ -75,10 +71,6 @@ def funcsnap(req: func.HttpRequest) -> func.HttpResponse:
 
     destination_blob = BlobClient(account_url, container_name, snapshot_name + ".vhd", credential=credential)
 
-    #snapshot_destination = f"https://{snapshot_storage_account}.blob.core.windows.net/{container_name}/{snapshot_name}.vhd"
-
-    copy_id = destination_blob.start_copy_from_url(snapshot_sas.access_sas)
-
-    #copy_id = blob_service_client.get_blob_client(container_name, snapshot_name).start_copy_from_url(snapshot_sas.access_sas, snapshot_destination)
+    destination_blob.start_copy_from_url(snapshot_sas.access_sas)
     
-    return func.HttpResponse(f"Snapshot {snapshot_name} created successfully. Blob copy ID is {copy_id.id}")
+    return func.HttpResponse(f"Snapshot {snapshot_name} created successfully in storage account {snapshot_storage_account} in container {container_name}.")
