@@ -4,6 +4,7 @@ import datetime
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.compute import ComputeManagementClient
 from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobClient
 from azure.mgmt.compute.models import GrantAccessData
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
@@ -72,7 +73,12 @@ def funcsnap(req: func.HttpRequest) -> func.HttpResponse:
         grant_access_data
     ).result()
 
-    copy_id = blob_service_client.start_copy_from_url(snapshot_sas.access_sas, f"https://{snapshot_storage_account}.blob.core.windows.net/{container_name}/{snapshot_name}.vhd")
+    destination_blob = BlobClient(account_url, container_name, snapshot_name + ".vhd", credential=credential)
+
+    #snapshot_destination = f"https://{snapshot_storage_account}.blob.core.windows.net/{container_name}/{snapshot_name}.vhd"
+
+    destination_blob.start_copy_from_url(source_url=snapshot_sas.access_sas, overwrite=True)
+
+    #copy_id = blob_service_client.get_blob_client(container_name, snapshot_name).start_copy_from_url(snapshot_sas.access_sas, snapshot_destination)
     
-    return func.HttpResponse(f"Snapshot {snapshot_name} created successfully. Copy job started with ID {copy_id}")
-    status_code=200
+    return func.HttpResponse(f"Snapshot {snapshot_name} created successfully.")
