@@ -77,8 +77,8 @@ def funcsnap(req: func.HttpRequest) -> func.HttpResponse:
 
     #snapshot_destination = f"https://{snapshot_storage_account}.blob.core.windows.net/{container_name}/{snapshot_name}.vhd"
 
-    destination_blob.start_copy_from_url(source_url=snapshot_sas.access_sas, overwrite=True)
+    copy_id = destination_blob.start_copy_from_url(snapshot_sas.access_sas)
 
     #copy_id = blob_service_client.get_blob_client(container_name, snapshot_name).start_copy_from_url(snapshot_sas.access_sas, snapshot_destination)
     
-    return func.HttpResponse(f"Snapshot {snapshot_name} created successfully.")
+    return func.HttpResponse(f"Snapshot {snapshot_name} created successfully. Blob copy ID is {copy_id.id}")
