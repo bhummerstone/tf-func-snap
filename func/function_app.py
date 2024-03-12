@@ -66,8 +66,8 @@ def funcsnap(req: func.HttpRequest) -> func.HttpResponse:
     snapshot_sas = compute_client.snapshots.begin_grant_access(
         resource_group,
         snapshot_name,
-        access_duration=3600,
-        access_level="Read"
+        access="Read",
+        duration_in_seconds=3600
     ).result()
 
     copy_id = blob_service_client.start_copy_from_url(snapshot_sas.access_sas, f"https://{snapshot_storage_account}.blob.core.windows.net/{container_name}/{snapshot_name}.vhd")
