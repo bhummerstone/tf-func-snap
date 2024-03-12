@@ -4,6 +4,7 @@ import datetime
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.compute import ComputeManagementClient
 from azure.storage.blob import BlobServiceClient
+from azure.mgmt.compute.models import GrantAccessData
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 
@@ -63,11 +64,12 @@ def funcsnap(req: func.HttpRequest) -> func.HttpResponse:
     container_name = datetime.date.today().strftime("%Y%m%d") + "snapshots"
     blob_service_client.create_container(container_name)
 
+    grant_access_data = GrantAccessData(access="Read", duration_in_seconds=3600)
+
     snapshot_sas = compute_client.snapshots.begin_grant_access(
         resource_group,
         snapshot_name,
-        access="Read",
-        duration_in_seconds=3600
+        grant_access_data
     ).result()
 
     copy_id = blob_service_client.start_copy_from_url(snapshot_sas.access_sas, f"https://{snapshot_storage_account}.blob.core.windows.net/{container_name}/{snapshot_name}.vhd")
